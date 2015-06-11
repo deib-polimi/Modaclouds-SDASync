@@ -1,14 +1,15 @@
 package imperial.modaclouds.sdaSync;
 
-import java.io.IOException;
-import java.util.HashSet;
-import java.util.Set;
-
 import it.polimi.tower4clouds.common.net.UnexpectedAnswerFromServerException;
 import it.polimi.tower4clouds.data_collector_library.DCAgent;
 import it.polimi.tower4clouds.manager.api.ManagerAPI;
 import it.polimi.tower4clouds.model.data_collectors.DCDescriptor;
 import it.polimi.tower4clouds.model.ontology.Resource;
+
+import java.io.IOException;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 
 public class DataCollectorAgent  {
@@ -104,7 +105,16 @@ public class DataCollectorAgent  {
 											// "timestamp": 123131231 }
 					sda.setFunction(supportedMetric);
 					sda.setMetricName(requiredMetric);
-					sda.setParameters(dcAgent.getParameters(requiredMetric));
+					
+					Map<String, String> params = dcAgent.getParameters(requiredMetric);
+					while (params == null) {
+						try {
+							Thread.sleep(1000);
+						} catch (Exception e) { }
+						params = dcAgent.getParameters(requiredMetric);
+					}
+					
+					sda.setParameters(params);
 					sda.setTargetMetric(metricToBeForecast);
 					sdaSet.add(sda);
 					
