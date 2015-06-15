@@ -15,8 +15,13 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 public class DataCollectorAgent  {
+	
+	public static final Logger logger = LoggerFactory.getLogger(DataCollectorAgent.class);
 
 	public ManagerAPI manager;
 
@@ -42,7 +47,7 @@ public class DataCollectorAgent  {
 		try {
 			config = Config.getInstance();
 		} catch (ConfigurationException e) {
-			e.printStackTrace();
+			logger.error("Error while getting the instance of the configuration.", e);
 		}
 
 		manager = new ManagerAPI(config.getMmIP(),
@@ -78,7 +83,7 @@ public class DataCollectorAgent  {
 			}
 		}
 		catch (UnexpectedAnswerFromServerException | IOException e) {
-			e.printStackTrace();
+			logger.error("Error while checking the estimation metric.", e);
 		}
 
 		return metrics; 
@@ -90,7 +95,7 @@ public class DataCollectorAgent  {
 		try {
 			requiredMetrics = manager.getRequiredMetrics();
 		} catch (UnexpectedAnswerFromServerException | IOException e1) {
-			e1.printStackTrace();
+			logger.error("Error while getting the required metrics.", e1);
 		}
 		for (String requiredMetric : requiredMetrics) {
 			for (String supportedMetric: supportedMetrics) {
@@ -118,14 +123,14 @@ public class DataCollectorAgent  {
 					}
 
 					//String metricToBeForecast = requiredMetric.substring(index+1);
-					System.out.println("Forecast required for metric "
+					logger.info("Forecast required for metric "
 							+ metricToBeForecast);
 
 					try {
 						manager.registerHttpObserver(metricToBeForecast, config.getSdaURL(),
 								"TOWER/JSON");
 					} catch (NotFoundException | IOException e) {
-						e.printStackTrace();
+						logger.error("Error while registering the HTTP observer.", e);
 					} 						// An observer can
 					// be attached asking for different
 					// formats: RDF/JSON, TOWER/JSON,
