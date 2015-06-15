@@ -3,6 +3,7 @@ package imperial.modaclouds.sdaSync;
 import it.polimi.tower4clouds.common.net.UnexpectedAnswerFromServerException;
 import it.polimi.tower4clouds.data_collector_library.DCAgent;
 import it.polimi.tower4clouds.manager.api.ManagerAPI;
+import it.polimi.tower4clouds.manager.api.NotFoundException;
 import it.polimi.tower4clouds.model.data_collectors.DCDescriptor;
 import it.polimi.tower4clouds.model.ontology.InternalComponent;
 import it.polimi.tower4clouds.model.ontology.Resource;
@@ -123,7 +124,7 @@ public class DataCollectorAgent  {
 					try {
 						manager.registerHttpObserver(metricToBeForecast, config.getSdaURL(),
 								"TOWER/JSON");
-					} catch (UnexpectedAnswerFromServerException | IOException e) {
+					} catch (NotFoundException | IOException e) {
 						e.printStackTrace();
 					} 						// An observer can
 					// be attached asking for different
