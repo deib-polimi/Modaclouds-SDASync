@@ -3,6 +3,7 @@ package imperial.modaclouds.sdaSync;
 import it.polimi.tower4clouds.common.net.UnexpectedAnswerFromServerException;
 import it.polimi.tower4clouds.data_collector_library.DCAgent;
 import it.polimi.tower4clouds.manager.api.ManagerAPI;
+import it.polimi.tower4clouds.manager.api.NotFoundException;
 import it.polimi.tower4clouds.model.data_collectors.DCDescriptor;
 import it.polimi.tower4clouds.model.ontology.InternalComponent;
 import it.polimi.tower4clouds.model.ontology.Resource;
@@ -14,8 +15,13 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 public class DataCollectorAgent  {
+
+	public static final Logger logger = LoggerFactory.getLogger(DataCollectorAgent.class);
 
 	public ManagerAPI manager;
 
@@ -41,7 +47,7 @@ public class DataCollectorAgent  {
 		try {
 			config = Config.getInstance();
 		} catch (ConfigurationException e) {
-			e.printStackTrace();
+			logger.error("Error while getting the instance of the configuration.", e);
 		}
 
 		manager = new ManagerAPI(config.getMmIP(),
@@ -64,12 +70,12 @@ public class DataCollectorAgent  {
 				} catch (Exception e) { }
 				resources = manager.getResources();
 			}
-			
+
 			int count = 1;
 			for(Resource resource : resources) {
 				if (resource instanceof InternalComponent) {
 					ArrayList<String> methods = new ArrayList<String>();
-					
+
 					methods.addAll(((InternalComponent) resource).getProvidedMethods());
 					metrics.put("instance"+count, methods);
 					count++;
@@ -77,21 +83,21 @@ public class DataCollectorAgent  {
 			}
 		}
 		catch (UnexpectedAnswerFromServerException | IOException e) {
-			e.printStackTrace();
+			logger.error("Error while checking the estimation metric.", e);
 		}
 
-		return metrics; 
+		return metrics;
 	}
-	
+
 	public int registerMetric(String metricName) {
 		try {
 			manager.registerHttpObserver(metricName, config.getSdaURL(),
 					"TOWER/JSON");
-		} catch (UnexpectedAnswerFromServerException | IOException e) {
-			e.printStackTrace();
+		} catch (NotFoundException | IOException e) {
+			logger.error(String.format("Error while registering the observer at url %s for the metric %s.", config.getSdaURL(), metricName), e);
 			return -1;
-		} 
-		
+		}
+
 		return 1;
 	}
 
@@ -101,7 +107,7 @@ public class DataCollectorAgent  {
 		try {
 			requiredMetrics = manager.getRequiredMetrics();
 		} catch (UnexpectedAnswerFromServerException | IOException e1) {
-			e1.printStackTrace();
+			logger.error("Error while getting the required metrics.", e1);
 		}
 		for (String requiredMetric : requiredMetrics) {
 			for (String supportedMetric: supportedMetrics) {
@@ -129,14 +135,14 @@ public class DataCollectorAgent  {
 					}
 
 					//String metricToBeForecast = requiredMetric.substring(index+1);
-					System.out.println("Forecast required for metric "
+					logger.info("Forecast required for metric "
 							+ metricToBeForecast);
 
 					try {
 						manager.registerHttpObserver(metricToBeForecast, config.getSdaURL(),
 								"TOWER/JSON");
-					} catch (UnexpectedAnswerFromServerException | IOException e) {
-						e.printStackTrace();
+					} catch (NotFoundException | IOException e) {
+						logger.error("Error while registering the HTTP observer.", e);
 					} 						// An observer can
 					// be attached asking for different
 					// formats: RDF/JSON, TOWER/JSON,
