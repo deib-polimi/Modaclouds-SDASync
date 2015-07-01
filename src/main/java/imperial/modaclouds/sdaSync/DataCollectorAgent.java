@@ -93,7 +93,7 @@ public class DataCollectorAgent  {
 		try {
 			manager.registerHttpObserver(metricName, config.getSdaURL(),
 					"TOWER/JSON");
-		} catch (UnexpectedAnswerFromServerException | IOException e) {
+		} catch (NotFoundException | IOException e) {
 			logger.error(String.format("Error while registering the observer at url %s for the metric %s.", config.getSdaURL(), metricName), e);
 			return -1;
 		}
