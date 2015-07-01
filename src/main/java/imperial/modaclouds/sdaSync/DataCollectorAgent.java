@@ -20,7 +20,7 @@ import org.slf4j.LoggerFactory;
 
 
 public class DataCollectorAgent  {
-	
+
 	public static final Logger logger = LoggerFactory.getLogger(DataCollectorAgent.class);
 
 	public ManagerAPI manager;
@@ -70,12 +70,12 @@ public class DataCollectorAgent  {
 				} catch (Exception e) { }
 				resources = manager.getResources();
 			}
-			
+
 			int count = 1;
 			for(Resource resource : resources) {
 				if (resource instanceof InternalComponent) {
 					ArrayList<String> methods = new ArrayList<String>();
-					
+
 					methods.addAll(((InternalComponent) resource).getProvidedMethods());
 					metrics.put("instance"+count, methods);
 					count++;
@@ -86,18 +86,18 @@ public class DataCollectorAgent  {
 			logger.error("Error while checking the estimation metric.", e);
 		}
 
-		return metrics; 
+		return metrics;
 	}
-	
+
 	public int registerMetric(String metricName) {
 		try {
 			manager.registerHttpObserver(metricName, config.getSdaURL(),
 					"TOWER/JSON");
 		} catch (UnexpectedAnswerFromServerException | IOException e) {
-			e.printStackTrace();
+			logger.error(String.format("Error while registering the observer at url %s for the metric %s.", config.getSdaURL(), metricName), e);
 			return -1;
-		} 
-		
+		}
+
 		return 1;
 	}
 
