@@ -31,7 +31,7 @@ public class DataCollectorAgent  {
 
 	Config config = null;
 
-	private String[] supportedMetrics = {"EstimationCI","EstimationFCFS","EstimationUBO","EstimationUBR"
+	private String[] supportedMetrics = {"EstimationCI","EstimationFCFS","EstimationUBO","EstimationUBR","EstimationERPS"
 			,"HaproxyCI","HaproxyUBR","ForecastingTimeseriesARIMA","ForecastingTimeseriesARMA","ForecastingTimeseriesAR"};
 
 	public DataCollectorAgent() {
