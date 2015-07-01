@@ -82,6 +82,18 @@ public class DataCollectorAgent  {
 
 		return metrics; 
 	}
+	
+	public int registerMetric(String metricName) {
+		try {
+			manager.registerHttpObserver(metricName, config.getSdaURL(),
+					"TOWER/JSON");
+		} catch (UnexpectedAnswerFromServerException | IOException e) {
+			e.printStackTrace();
+			return -1;
+		} 
+		
+		return 1;
+	}
 
 	public Set<SDAMetric> checkMetric() {
 		Set<String> requiredMetrics = null;
