@@ -157,12 +157,12 @@ public class DataCollectorAgent  {
 					sda.setFunction(supportedMetric);
 					sda.setMetricName(requiredMetric);
 
-					Map<String, String> params = dcAgent.getParameters(requiredMetric);
+					Map<String, String> params = dcAgent.getParameters(new Resource(), requiredMetric);
 					while (params == null) {
 						try {
 							Thread.sleep(1000);
 						} catch (Exception e) { }
-						params = dcAgent.getParameters(requiredMetric);
+						params = dcAgent.getParameters(new Resource(), requiredMetric);
 					}
 
 					sda.setParameters(params);
